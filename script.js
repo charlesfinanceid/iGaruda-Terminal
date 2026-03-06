@@ -1,12 +1,12 @@
 const TICKERS = ['BBCA.JK', 'BBRI.JK', 'BMRI.JK', 'TLKM.JK', 'ASII.JK', 'ANTM.JK', 'ADRO.JK', 'GOTO.JK'];
 
 const sectors = [
-  ['Banking', '+0.00%', '-', 'BBCA / BBRI / BMRI'],
-  ['Energy', '+0.00%', '-', 'ADRO / MEDC'],
-  ['Mining', '+0.00%', '-', 'ANTM / INCO'],
-  ['Technology', '+0.00%', '-', 'GOTO / BUKA'],
-  ['Consumer Goods', '+0.00%', '-', 'ICBP / UNVR'],
-  ['Telecommunications', '+0.00%', '-', 'TLKM / EXCL'],
+  ['Banking', '-', '-', 'BBCA / BBRI / BMRI'],
+  ['Energy', '-', '-', 'ADRO / MEDC'],
+  ['Mining', '-', '-', 'ANTM / INCO'],
+  ['Technology', '-', '-', 'GOTO / BUKA'],
+  ['Consumer Goods', '-', '-', 'ICBP / UNVR'],
+  ['Telecommunications', '-', '-', 'TLKM / EXCL'],
 ];
 
 function fmtNumber(n) {
@@ -19,12 +19,28 @@ function colorClass(num) {
 
 async function fetchJSON(url) {
   const r = await fetch(url);
-  if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  return r.json();
+  const payload = await r.json();
+  if (!r.ok) {
+    throw new Error(payload.error || `HTTP ${r.status}`);
+  }
+  return payload;
+}
+
+function renderUnavailable(message) {
+  document.getElementById('watchlist').innerHTML = `<li>Live feed unavailable</li>`;
+  document.getElementById('heatmap').innerHTML = `<div class="heat-cell">${message}</div>`;
+  document.getElementById('tickerTape').textContent = `LIVE FEED ERROR • ${message}`;
+  document.getElementById('dataMode').textContent = 'LIVE FEED ERROR';
+  document.getElementById('dataSource').textContent = message;
 }
 
 function renderQuotes(payload) {
   const results = payload.results || [];
+  if (!results.length) {
+    renderUnavailable('No data returned from upstream.');
+    return;
+  }
+
   const top = results.slice(0, 5);
   document.getElementById('watchlist').innerHTML = top.map((s) => {
     const chg = s.regularMarketChangePercent ?? 0;
@@ -42,21 +58,21 @@ function renderQuotes(payload) {
   const losers = [...results].sort((a, b) => (a.regularMarketChangePercent ?? 0) - (b.regularMarketChangePercent ?? 0)).slice(0, 2);
   document.getElementById('tickerTape').textContent = `Mode: ${payload.mode.toUpperCase()} • Source: ${payload.source} • Top Gainers: ${gainers.map((g) => `${g.symbol.replace('.JK', '')} ${g.regularMarketChangePercent >= 0 ? '+' : ''}${(g.regularMarketChangePercent ?? 0).toFixed(2)}%`).join(', ')} • Top Losers: ${losers.map((l) => `${l.symbol.replace('.JK', '')} ${(l.regularMarketChangePercent ?? 0).toFixed(2)}%`).join(', ')}`;
 
-  document.getElementById('dataMode').textContent = payload.mode === 'live' ? 'LIVE DATA' : 'FALLBACK DATA';
+  document.getElementById('dataMode').textContent = 'LIVE DATA';
   document.getElementById('dataSource').textContent = payload.source;
 }
 
 function renderSectorTable() {
   document.getElementById('sectorTable').innerHTML = sectors
-    .map((s) => `<tr><td>${s[0]}</td><td class="up">${s[1]}</td><td>${s[2]}</td><td>${s[3]}</td></tr>`)
+    .map((s) => `<tr><td>${s[0]}</td><td>${s[1]}</td><td>${s[2]}</td><td>${s[3]}</td></tr>`)
     .join('');
 }
 
 async function renderChart(symbol = 'BBCA.JK') {
-  const payload = await fetchJSON(`/api/chart/${encodeURIComponent(symbol)}?range=1d&interval=5m`);
+  const payload = await fetchJSON(`/api/chart/${encodeURIComponent(symbol)}?range=1d&interval=1m`);
   const result = payload?.data?.chart?.result?.[0];
   const points = result?.indicators?.quote?.[0]?.close?.filter((x) => Number.isFinite(x)) ?? [];
-  if (!points.length) return;
+  if (!points.length) throw new Error('No valid chart points from upstream.');
 
   const min = Math.min(...points);
   const max = Math.max(...points);
@@ -86,8 +102,7 @@ async function refreshAll() {
     renderQuotes(quotes);
     await renderChart((quotes.results?.[0]?.symbol) || 'BBCA.JK');
   } catch (err) {
-    document.getElementById('dataMode').textContent = 'ERROR';
-    document.getElementById('dataSource').textContent = err.message;
+    renderUnavailable(err.message);
   }
 }
 
@@ -100,17 +115,16 @@ function bindInteractions() {
       const input = search.value.trim().toUpperCase();
       const symbol = input.endsWith('.JK') ? input : `${input}.JK`;
       command.value = `${symbol} chart loaded`;
-      await renderChart(symbol);
+      try {
+        await renderChart(symbol);
+      } catch (err) {
+        renderUnavailable(err.message);
+      }
     }
   });
 
   command.addEventListener('keydown', async (e) => {
-    if (e.key === 'Enter') {
-      const q = command.value.toLowerCase();
-      if (q.includes('top gainers') || q.includes('heatmap') || q.includes('banking')) {
-        await refreshAll();
-      }
-    }
+    if (e.key === 'Enter') await refreshAll();
   });
 }
 
@@ -119,4 +133,4 @@ bindInteractions();
 refreshAll();
 tickClock();
 setInterval(tickClock, 1000);
-setInterval(refreshAll, 15000);
+setInterval(refreshAll, 1000);

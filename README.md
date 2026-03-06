@@ -1,35 +1,33 @@
 # iGaruda Terminal
 
-iGaruda Terminal adalah dashboard market intelligence untuk saham Indonesia (IDX) dengan mode **live refresh**.
+Terminal analitik pasar saham Indonesia (IDX) dengan desain institutional dark-mode dan **live polling per detik**.
 
-## Yang sudah jalan
+## Status data
 
-- UI terminal profesional dark-mode dengan panel kepadatan tinggi.
-- Backend server (`server.py`) dengan endpoint live:
-  - `/api/quotes` untuk harga & perubahan saham IDX (symbol `.JK`)
-  - `/api/chart/:ticker` untuk data chart intraday
-- Frontend auto-refresh setiap 15 detik (live polling).
-- Command/search bar untuk load chart ticker cepat.
+- Aplikasi ini **hanya menampilkan live data** dari upstream feed (`*.JK`).
+- Jika upstream gagal/terblokir, sistem menampilkan **LIVE FEED ERROR** (tanpa data dummy/fallback).
 
-## Sumber data
+## Endpoint backend
 
-- Yahoo Finance public feed untuk simbol IDX (`*.JK`) via backend proxy.
-- Struktur sudah disiapkan untuk integrasi feed resmi IDX/OJK/BI.
+- `GET /api/quotes?symbols=BBCA.JK,BBRI.JK,...`
+- `GET /api/chart/:ticker?range=1d&interval=1m`
+- `GET /api/news` (target connector resmi IDX/OJK/BI)
 
-> Catatan: bila koneksi ke sumber eksternal diblokir lingkungan/server, sistem otomatis masuk mode fallback agar terminal tetap berjalan.
-
-## Jalankan
+## Jalankan lokal
 
 ```bash
 python3 server.py
 ```
 
-Buka: <http://localhost:4173>
+Lalu buka link ini:
+- <http://localhost:4173>
 
-## Deploy supaya dapat link publik
+## Bikin link publik yang bisa diklik
 
-Contoh opsi cepat:
-- Railway / Render: deploy file ini sebagai Python web service.
-- VPS: jalankan `python3 server.py` di belakang Nginx + domain.
+Contoh (pakai cloudflared):
 
-Setelah deploy, terminal bisa diakses lewat link publik dan data akan terus refresh.
+```bash
+cloudflared tunnel --url http://localhost:4173
+```
+
+Nanti akan keluar URL publik `https://...trycloudflare.com` yang bisa langsung dibuka dari device mana pun.
