@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iGaruda Terminal</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="top-bar panel">
+        <div class="brand">
+          <span class="logo">🦅</span>
+          <div>
+            <h1>iGaruda Terminal</h1>
+            <small>Indonesian Market Intelligence Platform</small>
+          </div>
+        </div>
+        <div class="top-controls">
+          <input id="globalSearch" type="text" placeholder="Search ticker, company, sector (e.g. BBCA, banking)" />
+          <input id="commandInput" type="text" placeholder="Command mode (e.g. top gainers, BBCA chart)" />
+        </div>
+        <div class="status-block">
+          <div><span class="dot live"></span> IDX Open</div>
+          <div>WIB <span id="clock"></span></div>
+          <div>User: Analyst-01</div>
+        </div>
+      </header>
+
+      <aside class="left-sidebar panel">
+        <section>
+          <h2>Watchlists</h2>
+          <ul id="watchlist"></ul>
+        </section>
+        <section>
+          <h2>Modules</h2>
+          <ul class="menu-list">
+            <li>Sectors</li>
+            <li>Indices</li>
+            <li>Screeners</li>
+            <li>News</li>
+            <li>Alerts</li>
+            <li>Portfolio Tracker</li>
+          </ul>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <section class="panel chart-panel">
+          <div class="panel-title-row">
+            <h2>Advanced Charting Engine</h2>
+            <div class="badges">
+              <span class="badge">Candlestick</span>
+              <span class="badge">Heikin-Ashi</span>
+              <span class="badge">1m-1M</span>
+            </div>
+          </div>
+          <div class="chart-placeholder">
+            <div class="grid"></div>
+            <svg viewBox="0 0 600 220" preserveAspectRatio="none" aria-label="sample market chart">
+              <polyline points="0,160 60,145 120,150 180,118 240,130 300,95 360,115 420,82 480,96 540,72 600,85" />
+            </svg>
+          </div>
+          <div class="metrics-row" id="chartMetrics"></div>
+        </section>
+
+        <section class="panel data-panel">
+          <h2>IDX Market Heatmap & Top Movers</h2>
+          <div id="heatmap" class="heatmap-grid"></div>
+        </section>
+
+        <section class="panel sector-panel">
+          <h2>Sector Analysis</h2>
+          <table>
+            <thead>
+              <tr><th>Sector</th><th>Daily</th><th>Relative Strength</th><th>Leadership</th></tr>
+            </thead>
+            <tbody id="sectorTable"></tbody>
+          </table>
+        </section>
+
+        <section class="panel screener-panel">
+          <h2>Screening Engine</h2>
+          <div class="filter-row">
+            <span>Market Cap &gt; IDR 10T</span>
+            <span>PE &lt; 18</span>
+            <span>Dividend Yield &gt; 4%</span>
+            <span>Volume Spike &gt; 1.5x</span>
+          </div>
+          <table>
+            <thead>
+              <tr><th>Ticker</th><th>Price</th><th>PE</th><th>Revenue Growth</th><th>Yield</th><th>Momentum</th></tr>
+            </thead>
+            <tbody id="screenerTable"></tbody>
+          </table>
+        </section>
+
+        <section class="panel news-panel">
+          <h2>News & Events Feed</h2>
+          <ul id="newsFeed"></ul>
+        </section>
+      </main>
+
+      <aside class="right-sidebar panel">
+        <section>
+          <h2>Order Flow Insights</h2>
+          <div id="orderFlow"></div>
+        </section>
+        <section>
+          <h2>Market Breadth</h2>
+          <ul class="compact-list">
+            <li>Advance / Decline: <strong id="adRatio">214 / 171</strong></li>
+            <li>Up Volume / Down Volume: <strong>1.42x</strong></li>
+            <li>Volatility Pulse: <strong>Moderate</strong></li>
+            <li>Sector Rotation: <strong>Financials → Energy</strong></li>
+          </ul>
+        </section>
+        <section>
+          <h2>Portfolio Tracker</h2>
+          <ul class="compact-list">
+            <li>Total Equity: <strong>IDR 2.85B</strong></li>
+            <li>Daily PnL: <strong class="up">+1.83%</strong></li>
+            <li>Risk Exposure: <strong>62%</strong></li>
+            <li>Sector Concentration: <strong>Banking 31%</strong></li>
+          </ul>
+        </section>
+      </aside>
+
+      <footer class="bottom-panel panel">
+        <div class="ticker-label">Terminal Feed</div>
+        <marquee id="tickerTape" behavior="scroll" direction="left"></marquee>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
