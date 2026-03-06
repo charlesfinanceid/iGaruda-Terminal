@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>iGaruda Terminal</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="top-bar panel">
+        <div class="brand">
+          <div class="logo">🦅</div>
+          <div>
+            <h1>iGaruda Terminal</h1>
+            <small>Indonesian Market Intelligence</small>
+          </div>
+        </div>
+
+        <div class="top-controls">
+          <input id="globalSearch" type="text" placeholder="Search ticker/company (BBCA, TLKM, ADRO)" />
+          <input id="commandInput" type="text" placeholder="Command mode: BBCA chart | top gainers | IDX banking sector" />
+        </div>
+
+        <div class="status-block">
+          <div><span class="dot live"></span> <span id="marketStatus">Market Data Monitoring</span></div>
+          <div>WIB <span id="clock">--:--:--</span></div>
+        </div>
+      </header>
+
+      <aside class="left-sidebar panel">
+        <section>
+          <h2>Navigation</h2>
+          <ul class="menu-list">
+            <li>Watchlists</li>
+            <li>Sectors</li>
+            <li>Indices</li>
+            <li>Screeners</li>
+            <li>News & Events</li>
+            <li>Alerts</li>
+            <li>Portfolio Tracker</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>IDX Watchlist</h2>
+          <ul id="watchlist"></ul>
+        </section>
+
+        <section>
+          <h2>Top Movers</h2>
+          <ul id="topMovers" class="compact-list"></ul>
+        </section>
+      </aside>
+
+      <main class="workspace">
+        <section class="live-ribbon panel">
+          <span>Data Mode:</span>
+          <strong id="dataMode">Loading...</strong>
+          <span>Source:</span>
+          <strong id="dataSource">-</strong>
+          <span>Refresh:</span>
+          <strong id="refreshInfo">1s quote / 15s chart</strong>
+        </section>
+
+        <section class="chart-panel panel">
+          <div class="panel-title-row">
+            <h2 id="chartTitle">Price Chart — BBCA.JK</h2>
+            <div class="badges">
+              <span class="badge">Candlestick Proxy</span>
+              <span class="badge">1D / 1m</span>
+            </div>
+          </div>
+          <div class="chart-placeholder">
+            <div class="grid"></div>
+            <svg viewBox="0 0 600 220" preserveAspectRatio="none">
+              <polyline id="chartLine" points=""></polyline>
+            </svg>
+          </div>
+          <div id="chartMetrics" class="metrics-row"></div>
+        </section>
+
+        <section class="data-panel panel">
+          <h2>IDX Heatmap</h2>
+          <div id="heatmap" class="heatmap-grid"></div>
+        </section>
+
+        <section class="sector-panel panel">
+          <h2>Sector Rotation Dashboard</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Sector</th>
+                <th>Change</th>
+                <th>Leadership</th>
+                <th>Relative Strength</th>
+              </tr>
+            </thead>
+            <tbody id="sectorTable"></tbody>
+          </table>
+        </section>
+
+        <section class="screener-panel panel">
+          <h2>Screener Engine</h2>
+          <div class="filter-row">
+            <span>Market Cap &gt; IDR 10T</span>
+            <span>Dividend Yield &gt; 3%</span>
+            <span>Momentum 30D &gt; 5%</span>
+            <span>Volume Spike &gt; 1.5x</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>Ticker</th>
+                <th>Last</th>
+                <th>%Chg</th>
+                <th>Volume</th>
+              </tr>
+            </thead>
+            <tbody id="screenerBody"></tbody>
+          </table>
+        </section>
+
+        <section class="news-panel panel">
+          <h2>News & Event Feed</h2>
+          <ul id="newsFeed"></ul>
+        </section>
+      </main>
+
+      <aside class="right-sidebar panel">
+        <section>
+          <h2>Market Breadth</h2>
+          <ul id="breadthList" class="compact-list"></ul>
+        </section>
+
+        <section>
+          <h2>Order Flow Insights</h2>
+          <ul id="flowList" class="compact-list"></ul>
+        </section>
+
+        <section>
+          <h2>Selected Company Snapshot</h2>
+          <ul id="companySnapshot" class="compact-list"></ul>
+        </section>
+
+        <section>
+          <h2>Portfolio Tracker</h2>
+          <ul class="compact-list">
+            <li>Total Equity: <strong>IDR 2.85B</strong></li>
+            <li>Daily PnL: <strong class="up">+1.83%</strong></li>
+            <li>Risk Exposure: <strong>62%</strong></li>
+            <li>Sector Concentration: <strong>Banking 31%</strong></li>
+          </ul>
+        </section>
+      </aside>
+
+      <footer class="bottom-panel panel">
+        <div class="ticker-label">Terminal Feed</div>
+        <marquee id="tickerTape" behavior="scroll" direction="left"></marquee>
+      </footer>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
