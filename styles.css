@@ -20,7 +20,7 @@ body {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 250px 1fr 280px;
+  grid-template-columns: 250px 1fr 300px;
   grid-template-rows: auto 1fr auto;
   gap: 10px;
   min-height: 100vh;
@@ -48,11 +48,7 @@ body {
 h1 { margin: 0; font-size: 1rem; letter-spacing: 0.03em; }
 small { color: var(--muted); }
 
-.top-controls {
-  display: flex;
-  gap: 8px;
-  flex: 1;
-}
+.top-controls { display: flex; gap: 8px; flex: 1; }
 
 input {
   width: 100%;
@@ -69,10 +65,7 @@ input {
 .dot.live { background: var(--up); box-shadow: 0 0 12px var(--up); }
 
 .left-sidebar,
-.right-sidebar {
-  padding: 10px;
-  overflow: auto;
-}
+.right-sidebar { padding: 10px; overflow: auto; }
 
 .left-sidebar h2,
 .right-sidebar h2,
@@ -99,12 +92,24 @@ input {
 .workspace {
   display: grid;
   gap: 10px;
-  grid-template-columns: 1.6fr 1fr;
+  grid-template-columns: 1.8fr 1fr;
   grid-template-areas:
+    "ribbon ribbon"
     "chart heat"
     "sector screener"
     "news news";
 }
+
+.live-ribbon {
+  grid-area: ribbon;
+  padding: 6px 10px;
+  font-size: 0.78rem;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.live-ribbon strong { color: #9fcbff; }
 
 .chart-panel { grid-area: chart; padding: 10px; }
 .data-panel { grid-area: heat; padding: 10px; }
@@ -124,7 +129,7 @@ input {
 
 .chart-placeholder {
   margin-top: 8px;
-  height: 220px;
+  height: 230px;
   border-radius: 6px;
   border: 1px solid #1d3050;
   position: relative;
@@ -158,7 +163,7 @@ polyline { fill: none; stroke: #62a0ff; stroke-width: 3; }
 
 .heatmap-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 6px;
 }
 .heat-cell {
@@ -166,6 +171,9 @@ polyline { fill: none; stroke: #62a0ff; stroke-width: 3; }
   border-radius: 5px;
   font-size: 0.78rem;
   border: 1px solid rgba(255,255,255,0.08);
+}
+.heat-cell.danger {
+  background: rgba(227, 81, 105, 0.4);
 }
 
 table {
@@ -215,17 +223,6 @@ th { color: #b2c8f1; }
   color: #9ebbf6;
 }
 marquee { color: #d1e1ff; font-size: 0.84rem; }
-
-
-.live-ribbon {
-  grid-column: 1 / -1;
-  padding: 6px 10px;
-  font-size: 0.8rem;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-.live-ribbon strong { color: #9fcbff; }
 
 @media (max-width: 1300px) {
   .app-shell {

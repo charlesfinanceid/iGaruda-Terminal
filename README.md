@@ -1,42 +1,44 @@
-# iGaruda Terminal (SAT SET)
+# iGaruda Terminal
 
-Kalau kamu nggak mau ribet deploy, command panjang, atau setup aneh-aneh:
+Terminal saham Indonesia gaya profesional (dark mode, multi-panel, data refresh live).
 
-## Cara pakai paling gampang (1 langkah)
+## SAT SET (1 langkah)
 
 ```bash
 ./run_igaruda.sh
 ```
 
-Lalu langsung buka link ini di browser:
+Lalu buka:
 
 - <http://127.0.0.1:4173>
 
-Selesai. Kalau mau stop tinggal tekan `CTRL + C` di terminal.
+Stop server: `CTRL + C`
 
 ---
 
-## Kalau `run_igaruda.sh` belum bisa dieksekusi
+## Fitur yang sudah jalan
 
-Jalankan sekali ini:
-
-```bash
-chmod +x run_igaruda.sh
-./run_igaruda.sh
-```
-
----
-
-## Data realtime
-
-- App ini ambil data live dari feed market publik simbol Indonesia (`*.JK`) via backend `server.py`.
-- **Tidak pakai dummy/fallback angka harga.**
-- Kalau feed eksternal lagi error/terblokir, UI akan tampilkan `LIVE FEED ERROR` secara transparan.
+- Watchlist live IDX (`.JK`) dengan refresh quote cepat.
+- Heatmap saham, top movers, market breadth, dan ticker feed bawah.
+- Chart intraday (1D / 1m) + metrik high/low/intraday return.
+- Company snapshot endpoint (`/api/company/:ticker`) untuk detail saham terpilih.
+- Command mode sederhana (`top gainers`, `refresh`, atau ketik ticker seperti `BBCA`).
+- UI transparan saat upstream gagal: tampil `LIVE FEED ERROR` (tanpa dummy data harga).
 
 ---
 
-## File penting
+## Endpoint API backend
 
-- `run_igaruda.sh` → launcher instan (yang kamu pakai)
-- `server.py` → backend API live data
-- `index.html`, `styles.css`, `script.js` → tampilan terminal
+- `GET /api/quotes?symbols=BBCA.JK,BBRI.JK`
+- `GET /api/chart/BBCA.JK?range=1d&interval=1m`
+- `GET /api/company/BBCA.JK`
+- `GET /api/news`
+
+Sumber data live saat ini: Yahoo Finance public feed untuk simbol Indonesia (`*.JK`).
+
+---
+
+## Catatan penting
+
+- Jika koneksi ke upstream diblokir environment, backend akan return `502` + pesan error jelas.
+- Tidak ada fallback angka palsu untuk harga.
