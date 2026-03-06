@@ -1,108 +1,78 @@
-const watchlist = [
-  { ticker: 'BBCA', price: 10175, chg: 1.35 },
-  { ticker: 'BBRI', price: 5475, chg: -0.72 },
-  { ticker: 'TLKM', price: 4210, chg: 0.95 },
-  { ticker: 'ASII', price: 5075, chg: 0.43 },
-  { ticker: 'ANTM', price: 1810, chg: 2.21 },
-];
+const TICKERS = ['BBCA.JK', 'BBRI.JK', 'BMRI.JK', 'TLKM.JK', 'ASII.JK', 'ANTM.JK', 'ADRO.JK', 'GOTO.JK'];
 
 const sectors = [
-  ['Banking', '+1.18%', '1.24', 'BBCA / BBRI'],
-  ['Energy', '+2.04%', '1.36', 'ADRO / MEDC'],
-  ['Mining', '+1.43%', '1.15', 'ANTM / INCO'],
-  ['Technology', '-0.34%', '0.82', 'GOTO / BUKA'],
-  ['Consumer Goods', '+0.61%', '1.03', 'ICBP / UNVR'],
-  ['Telecommunications', '+0.74%', '1.09', 'TLKM / EXCL'],
+  ['Banking', '+0.00%', '-', 'BBCA / BBRI / BMRI'],
+  ['Energy', '+0.00%', '-', 'ADRO / MEDC'],
+  ['Mining', '+0.00%', '-', 'ANTM / INCO'],
+  ['Technology', '+0.00%', '-', 'GOTO / BUKA'],
+  ['Consumer Goods', '+0.00%', '-', 'ICBP / UNVR'],
+  ['Telecommunications', '+0.00%', '-', 'TLKM / EXCL'],
 ];
 
-const screenerRows = [
-  ['ITMG', '25,450', '8.7', '13.2%', '7.8%', 'Strong'],
-  ['BMRI', '6,325', '11.2', '9.5%', '5.1%', 'Positive'],
-  ['ADRO', '3,010', '7.9', '11.8%', '6.4%', 'Strong'],
-  ['BBTN', '1,490', '6.8', '14.1%', '4.7%', 'Positive'],
-  ['AKRA', '1,735', '14.3', '8.2%', '4.2%', 'Neutral'],
-];
-
-const newsItems = [
-  'IDX reports improved liquidity as banking stocks lead turnover.',
-  'Bank Indonesia signals stable policy rate amid resilient rupiah.',
-  'Major coal producers announce revised dividend distribution schedules.',
-  'OJK releases updated disclosure guidance for listed technology issuers.',
-  'Consumer sector earnings previews point to margin normalization in Q3.',
-];
-
-const flow = [
-  ['Foreign Net Buy', 'IDR 512B'],
-  ['Block Trades', 'IDR 1.12T'],
-  ['Dominant Side', 'Aggressive Buyers'],
-  ['Liquidity Score', '8.4 / 10'],
-];
-
-function populate() {
-  document.getElementById('watchlist').innerHTML = watchlist
-    .map((s) => `<li>${s.ticker} <strong>${s.price.toLocaleString()}</strong> <span class="${s.chg > 0 ? 'up' : 'down'}">${s.chg > 0 ? '+' : ''}${s.chg}%</span></li>`)
-    .join('');
-
-  document.getElementById('chartMetrics').innerHTML = [
-    ['VWAP', '5,488'],
-    ['RSI (14)', '58.3'],
-    ['MACD', 'Bullish'],
-    ['Bollinger', 'Upper Break'],
-  ].map(([k, v]) => `<div class="metric">${k}<strong>${v}</strong></div>`).join('');
-
-  document.getElementById('heatmap').innerHTML = watchlist
-    .concat([
-      { ticker: 'GOTO', price: 78, chg: -1.2 },
-      { ticker: 'MDKA', price: 2390, chg: 1.8 },
-      { ticker: 'INDF', price: 6390, chg: 0.9 },
-    ])
-    .map((s) => {
-      const alpha = Math.min(Math.abs(s.chg) / 3, 0.95).toFixed(2);
-      const bg = s.chg >= 0 ? `rgba(27, 180, 106, ${alpha})` : `rgba(221, 64, 97, ${alpha})`;
-      return `<div class="heat-cell" style="background:${bg}"><strong>${s.ticker}</strong><br>${s.chg > 0 ? '+' : ''}${s.chg}%<br>Vol: ${(Math.random() * 9 + 1).toFixed(1)}M</div>`;
-    })
-    .join('');
-
-  document.getElementById('sectorTable').innerHTML = sectors
-    .map((s) => `<tr><td>${s[0]}</td><td class="${s[1].startsWith('+') ? 'up' : 'down'}">${s[1]}</td><td>${s[2]}</td><td>${s[3]}</td></tr>`)
-    .join('');
-
-  document.getElementById('screenerTable').innerHTML = screenerRows
-    .map((r) => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`)
-    .join('');
-
-  document.getElementById('newsFeed').innerHTML = newsItems.map((n) => `<li>${n}</li>`).join('');
-  document.getElementById('orderFlow').innerHTML = flow.map(([k, v]) => `<div class="metric">${k}<strong>${v}</strong></div>`).join('');
-
-  document.getElementById('tickerTape').textContent =
-    'IDX Composite +0.84% • LQ45 +1.12% • Top Gainers: ANTM +2.21%, ADRO +2.04%, BBCA +1.35% • Top Losers: GOTO -1.20%, BBRI -0.72% • USD/IDR 15,520';
+function fmtNumber(n) {
+  return Number.isFinite(n) ? n.toLocaleString('id-ID') : '-';
 }
 
-function bindInteractions() {
-  const search = document.getElementById('globalSearch');
-  const command = document.getElementById('commandInput');
+function colorClass(num) {
+  return num >= 0 ? 'up' : 'down';
+}
 
-  search.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      const q = search.value.toLowerCase();
-      const hit = watchlist.find((s) => s.ticker.toLowerCase() === q) || sectors.find((s) => s[0].toLowerCase().includes(q));
-      command.value = hit ? `${search.value} opened in workspace` : 'No exact match, showing broader IDX results';
-    }
-  });
+async function fetchJSON(url) {
+  const r = await fetch(url);
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  return r.json();
+}
 
-  command.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      const q = command.value.toLowerCase();
-      if (q.includes('top gainers')) {
-        newsItems.unshift('Command: Top gainers view focused on ANTM, ADRO, MDKA.');
-      } else if (q.includes('banking')) {
-        document.getElementById('adRatio').textContent = '238 / 152';
-      } else if (q.includes('heatmap')) {
-        document.getElementById('tickerTape').textContent = 'Heatmap mode enabled • Sector concentration highlights banking and energy leadership';
-      }
-      populate();
-    }
-  });
+function renderQuotes(payload) {
+  const results = payload.results || [];
+  const top = results.slice(0, 5);
+  document.getElementById('watchlist').innerHTML = top.map((s) => {
+    const chg = s.regularMarketChangePercent ?? 0;
+    return `<li>${s.symbol.replace('.JK', '')} <strong>${fmtNumber(s.regularMarketPrice)}</strong> <span class="${colorClass(chg)}">${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%</span></li>`;
+  }).join('');
+
+  document.getElementById('heatmap').innerHTML = results.map((s) => {
+    const chg = s.regularMarketChangePercent ?? 0;
+    const alpha = Math.min(Math.abs(chg) / 3, 0.95).toFixed(2);
+    const bg = chg >= 0 ? `rgba(27, 180, 106, ${alpha})` : `rgba(221, 64, 97, ${alpha})`;
+    return `<div class="heat-cell" style="background:${bg}"><strong>${s.symbol.replace('.JK', '')}</strong><br>${chg >= 0 ? '+' : ''}${chg.toFixed(2)}%<br>Vol: ${fmtNumber(s.regularMarketVolume)}</div>`;
+  }).join('');
+
+  const gainers = [...results].sort((a, b) => (b.regularMarketChangePercent ?? 0) - (a.regularMarketChangePercent ?? 0)).slice(0, 3);
+  const losers = [...results].sort((a, b) => (a.regularMarketChangePercent ?? 0) - (b.regularMarketChangePercent ?? 0)).slice(0, 2);
+  document.getElementById('tickerTape').textContent = `Mode: ${payload.mode.toUpperCase()} • Source: ${payload.source} • Top Gainers: ${gainers.map((g) => `${g.symbol.replace('.JK', '')} ${g.regularMarketChangePercent >= 0 ? '+' : ''}${(g.regularMarketChangePercent ?? 0).toFixed(2)}%`).join(', ')} • Top Losers: ${losers.map((l) => `${l.symbol.replace('.JK', '')} ${(l.regularMarketChangePercent ?? 0).toFixed(2)}%`).join(', ')}`;
+
+  document.getElementById('dataMode').textContent = payload.mode === 'live' ? 'LIVE DATA' : 'FALLBACK DATA';
+  document.getElementById('dataSource').textContent = payload.source;
+}
+
+function renderSectorTable() {
+  document.getElementById('sectorTable').innerHTML = sectors
+    .map((s) => `<tr><td>${s[0]}</td><td class="up">${s[1]}</td><td>${s[2]}</td><td>${s[3]}</td></tr>`)
+    .join('');
+}
+
+async function renderChart(symbol = 'BBCA.JK') {
+  const payload = await fetchJSON(`/api/chart/${encodeURIComponent(symbol)}?range=1d&interval=5m`);
+  const result = payload?.data?.chart?.result?.[0];
+  const points = result?.indicators?.quote?.[0]?.close?.filter((x) => Number.isFinite(x)) ?? [];
+  if (!points.length) return;
+
+  const min = Math.min(...points);
+  const max = Math.max(...points);
+  const norm = points.map((p, i) => {
+    const x = (i / (points.length - 1 || 1)) * 600;
+    const y = 200 - ((p - min) / ((max - min) || 1)) * 150;
+    return `${x.toFixed(1)},${(y + 10).toFixed(1)}`;
+  }).join(' ');
+
+  document.getElementById('chartLine').setAttribute('points', norm);
+  document.getElementById('chartMetrics').innerHTML = [
+    ['Last', points[points.length - 1]?.toFixed(2) || '-'],
+    ['High', max.toFixed(2)],
+    ['Low', min.toFixed(2)],
+    ['Points', String(points.length)],
+  ].map(([k, v]) => `<div class="metric">${k}<strong>${v}</strong></div>`).join('');
 }
 
 function tickClock() {
@@ -110,7 +80,43 @@ function tickClock() {
   document.getElementById('clock').textContent = now.toLocaleTimeString('en-GB', { hour12: false, timeZone: 'Asia/Jakarta' });
 }
 
-populate();
+async function refreshAll() {
+  try {
+    const quotes = await fetchJSON(`/api/quotes?symbols=${encodeURIComponent(TICKERS.join(','))}`);
+    renderQuotes(quotes);
+    await renderChart((quotes.results?.[0]?.symbol) || 'BBCA.JK');
+  } catch (err) {
+    document.getElementById('dataMode').textContent = 'ERROR';
+    document.getElementById('dataSource').textContent = err.message;
+  }
+}
+
+function bindInteractions() {
+  const search = document.getElementById('globalSearch');
+  const command = document.getElementById('commandInput');
+
+  search.addEventListener('keydown', async (e) => {
+    if (e.key === 'Enter') {
+      const input = search.value.trim().toUpperCase();
+      const symbol = input.endsWith('.JK') ? input : `${input}.JK`;
+      command.value = `${symbol} chart loaded`;
+      await renderChart(symbol);
+    }
+  });
+
+  command.addEventListener('keydown', async (e) => {
+    if (e.key === 'Enter') {
+      const q = command.value.toLowerCase();
+      if (q.includes('top gainers') || q.includes('heatmap') || q.includes('banking')) {
+        await refreshAll();
+      }
+    }
+  });
+}
+
+renderSectorTable();
 bindInteractions();
+refreshAll();
 tickClock();
 setInterval(tickClock, 1000);
+setInterval(refreshAll, 15000);

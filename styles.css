@@ -216,6 +216,17 @@ th { color: #b2c8f1; }
 }
 marquee { color: #d1e1ff; font-size: 0.84rem; }
 
+
+.live-ribbon {
+  grid-column: 1 / -1;
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.live-ribbon strong { color: #9fcbff; }
+
 @media (max-width: 1300px) {
   .app-shell {
     grid-template-columns: 220px 1fr;

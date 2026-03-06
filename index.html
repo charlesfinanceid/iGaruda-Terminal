@@ -27,6 +27,11 @@
         </div>
       </header>
 
+      <div class="live-ribbon panel">
+        <strong id="dataMode">LIVE DATA</strong>
+        <span>Source:</span> <span id="dataSource">Connecting...</span>
+      </div>
+
       <aside class="left-sidebar panel">
         <section>
           <h2>Watchlists</h2>
@@ -58,7 +63,7 @@
           <div class="chart-placeholder">
             <div class="grid"></div>
             <svg viewBox="0 0 600 220" preserveAspectRatio="none" aria-label="sample market chart">
-              <polyline points="0,160 60,145 120,150 180,118 240,130 300,95 360,115 420,82 480,96 540,72 600,85" />
+              <polyline id="chartLine" points="0,160 60,145 120,150 180,118 240,130 300,95 360,115 420,82 480,96 540,72 600,85" />
             </svg>
           </div>
           <div class="metrics-row" id="chartMetrics"></div>
