@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: igaruda-terminal
+    runtime: python
+    plan: free
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "python3 server.py"
+    healthCheckPath: "/healthz"
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 10000
+      - key: APP_TIMEOUT
+        value: 120
