@@ -1,0 +1,8 @@
+services:
+  igaruda-terminal:
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "${PORT:-8000}:${PORT:-8000}"
