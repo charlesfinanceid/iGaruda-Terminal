@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: igaruda-terminal
+    env: python
+    plan: free
+    buildCommand: ""
+    startCommand: python3 server.py
+    autoDeploy: true
+    envVars:
+      - key: HOST
+        value: 0.0.0.0
+      - key: UPSTREAM_TIMEOUT
+        sync: false
+      - key: CACHE_TTL_SECONDS
+        sync: false
+      - key: QUOTE_REFRESH_MS
+        sync: false
