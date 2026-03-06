@@ -1,33 +1,42 @@
-# iGaruda Terminal
+# iGaruda Terminal (SAT SET)
 
-Terminal analitik pasar saham Indonesia (IDX) dengan desain institutional dark-mode dan **live polling per detik**.
+Kalau kamu nggak mau ribet deploy, command panjang, atau setup aneh-aneh:
 
-## Status data
-
-- Aplikasi ini **hanya menampilkan live data** dari upstream feed (`*.JK`).
-- Jika upstream gagal/terblokir, sistem menampilkan **LIVE FEED ERROR** (tanpa data dummy/fallback).
-
-## Endpoint backend
-
-- `GET /api/quotes?symbols=BBCA.JK,BBRI.JK,...`
-- `GET /api/chart/:ticker?range=1d&interval=1m`
-- `GET /api/news` (target connector resmi IDX/OJK/BI)
-
-## Jalankan lokal
+## Cara pakai paling gampang (1 langkah)
 
 ```bash
-python3 server.py
+./run_igaruda.sh
 ```
 
-Lalu buka link ini:
-- <http://localhost:4173>
+Lalu langsung buka link ini di browser:
 
-## Bikin link publik yang bisa diklik
+- <http://127.0.0.1:4173>
 
-Contoh (pakai cloudflared):
+Selesai. Kalau mau stop tinggal tekan `CTRL + C` di terminal.
+
+---
+
+## Kalau `run_igaruda.sh` belum bisa dieksekusi
+
+Jalankan sekali ini:
 
 ```bash
-cloudflared tunnel --url http://localhost:4173
+chmod +x run_igaruda.sh
+./run_igaruda.sh
 ```
 
-Nanti akan keluar URL publik `https://...trycloudflare.com` yang bisa langsung dibuka dari device mana pun.
+---
+
+## Data realtime
+
+- App ini ambil data live dari feed market publik simbol Indonesia (`*.JK`) via backend `server.py`.
+- **Tidak pakai dummy/fallback angka harga.**
+- Kalau feed eksternal lagi error/terblokir, UI akan tampilkan `LIVE FEED ERROR` secara transparan.
+
+---
+
+## File penting
+
+- `run_igaruda.sh` → launcher instan (yang kamu pakai)
+- `server.py` → backend API live data
+- `index.html`, `styles.css`, `script.js` → tampilan terminal
